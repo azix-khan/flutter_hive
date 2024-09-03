@@ -16,11 +16,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Hive db practice',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      theme: ThemeData.light(
         useMaterial3: true,
       ),
+      title: 'Flutter Hive db practice',
+      debugShowCheckedModeBanner: false,
       home: const HomeScreen(),
     );
   }
