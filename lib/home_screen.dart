@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hive/boxes/boxes.dart';
 import 'package:flutter_hive/models/notes_model.dart';
@@ -53,6 +54,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   final box = Boxes.getData();
                   box.add(data);
+                  // now save the data
+                  data.save();
+                  if (kDebugMode) {
+                    print(box);
+                  }
+                  // now clear the field
+                  titleController.clear();
+                  descriptionController.clear();
 
                   Navigator.pop(context);
                 },
