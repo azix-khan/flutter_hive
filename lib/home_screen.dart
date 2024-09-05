@@ -26,18 +26,58 @@ class _HomeScreenState extends State<HomeScreen> {
           // remeber to convert Box data into list form
           var data = box.values.toList().cast<NotesModel>();
           return ListView.builder(
+            reverse: true,
+            shrinkWrap: true,
             itemCount: box.length,
             itemBuilder: (context, index) {
               return Card(
                 child: Padding(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(data[index].title.toString()),
-                      Text(data[index].description.toString()),
+                      Row(
+                        children: [
+                          Text(
+                            data[index].title.toString(),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Spacer(),
+                          InkWell(
+                            onTap: () {
+                              delete(data[index]);
+                            },
+                            child: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 15,
+                          ),
+                          InkWell(
+                              onTap: () {
+                                _editDialog(
+                                  data[index],
+                                  data[index].title.toString(),
+                                  data[index].description.toString(),
+                                );
+                              },
+                              child: const Icon(Icons.edit)),
+                        ],
+                      ),
+                      Text(
+                        data[index].description.toString(),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -53,6 +93,69 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void delete(NotesModel notesModel) async {
+    await notesModel.delete();
+  }
+
+  Future<void> _editDialog(
+      NotesModel notesModel, String title, String description) async {
+    titleController.text = title;
+    descriptionController.text = description;
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Edit Notes"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  notesModel.title = titleController.text.toString();
+                  notesModel.description =
+                      descriptionController.text.toString();
+                  // save notes model
+                  notesModel.save();
+                  // now clear the field
+                  titleController.clear();
+                  descriptionController.clear();
+
+                  Navigator.pop(context);
+                },
+                child: const Text("Update"),
+              ),
+            ],
+            content: SingleChildScrollView(
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      hintText: 'Edit title',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      hintText: 'Edit descripption',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 
   Future<void> _showMyDialog() async {
